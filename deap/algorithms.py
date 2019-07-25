@@ -438,7 +438,7 @@ def eaMuCommaLambda(population, toolbox, mu, lambda_, cxpb, mutpb, ngen,
 
 
 def eaGenerateUpdate(toolbox, ngen, halloffame=None, stats=None,
-                     verbose=__debug__):
+                     verbose=__debug__, callback=None):
     """This is algorithm implements the ask-tell model proposed in
     [Colette2010]_, where ask is called `generate` and tell is called `update`.
 
@@ -495,5 +495,16 @@ def eaGenerateUpdate(toolbox, ngen, halloffame=None, stats=None,
         logbook.record(gen=gen, nevals=len(population), **record)
         if verbose:
             print logbook.stream
+
+        if callback is not None:
+            best_ind = population[0]
+            best_fit = best_ind.fitness.values[0]
+            for ind in population[1:]:
+                ind_fit = ind.fitness.values[0]
+                if ind_fit < best_fit:
+                    best_ind = ind
+                    best_fit = ind_fit
+            
+            callback(best_ind, best_fit)
 
     return population, logbook
